@@ -22,8 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 3000);
         
-        // Push camera way back on mobile to fit the wide text into narrow portrait screens
-        camera.position.z = isMobile ? 1000 : 400;
+        // Camera can be much closer on mobile now since we wrap the text into two lines
+        camera.position.z = isMobile ? 700 : 400;
         
         const renderer = new THREE.WebGLRenderer({ canvas: canvas3d, alpha: true, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -35,18 +35,26 @@ document.addEventListener('DOMContentLoaded', () => {
         // We render the text "EARNEST" onto a hidden 2D canvas and sample its pixels to get 3D coords
         const textCanvas = document.createElement('canvas');
         const tCtx = textCanvas.getContext('2d');
-        // Size of the virtual canvas we're sampling from
+        
+        // Size of the virtual canvas we're sampling from (taller on mobile to fit 2 lines)
         const tWidth = 800;
-        const tHeight = 250;
+        const tHeight = isMobile ? 400 : 250;
         textCanvas.width = tWidth;
         textCanvas.height = tHeight;
         
         tCtx.fillStyle = '#ffffff';
         // Using a bold, impactful font
-        tCtx.font = 'bold 130px "Orbitron", "Share Tech Mono", sans-serif';
+        tCtx.font = 'bold 140px "Orbitron", "Share Tech Mono", sans-serif';
         tCtx.textAlign = 'center';
         tCtx.textBaseline = 'middle';
-        tCtx.fillText('EARNEST', tWidth / 2, tHeight / 2);
+        
+        if (isMobile) {
+            // Split "EARNEST" into 2 lines for mobile
+            tCtx.fillText('EARN', tWidth / 2, tHeight / 2 - 65);
+            tCtx.fillText('EST', tWidth / 2, tHeight / 2 + 65);
+        } else {
+            tCtx.fillText('EARNEST', tWidth / 2, tHeight / 2);
+        }
         
         const imgData = tCtx.getImageData(0, 0, tWidth, tHeight).data;
         
